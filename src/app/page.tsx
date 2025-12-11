@@ -2,13 +2,27 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import { Button } from '@/components/ui/button';
-import { IconPhone, IconClock, IconHeart, IconShieldCheck, IconUsers } from '@tabler/icons-react';
+import {
+  IconPhone,
+  IconClock,
+  IconHeart,
+  IconShieldCheck,
+  IconUsers
+} from '@tabler/icons-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'CuraBot - Caring Voice Companion for Medication Reminders',
-  description: 'CuraBot is a trusted AI voice companion that helps elderly loved ones take their medications on time through gentle phone call reminders and daily wellness check-ins.',
-  keywords: ['medication reminder', 'elderly care', 'caregiver support', 'senior health', 'voice assistant', 'medication adherence'],
+  description:
+    'CuraBot is a trusted AI voice companion that helps elderly loved ones take their medications on time through gentle phone call reminders and daily wellness check-ins.',
+  keywords: [
+    'medication reminder',
+    'elderly care',
+    'caregiver support',
+    'senior health',
+    'voice assistant',
+    'medication adherence'
+  ]
 };
 
 export default async function Page() {
@@ -31,7 +45,10 @@ export default async function Page() {
           </Link>
           <nav className='flex items-center gap-4'>
             <Link href='/auth/sign-in'>
-              <Button variant='ghost' className='text-gray-600 hover:text-gray-900'>
+              <Button
+                variant='ghost'
+                className='text-gray-600 hover:text-gray-900'
+              >
                 Sign In
               </Button>
             </Link>
@@ -52,15 +69,17 @@ export default async function Page() {
               <IconShieldCheck className='h-4 w-4' />
               <span>Trusted by 2,000+ Caregivers</span>
             </div>
-            
-            <h1 className='mb-6 text-4xl font-bold leading-tight text-gray-900 md:text-5xl'>
+
+            <h1 className='mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl'>
               Never Worry About Missed Medications Again
             </h1>
-            
+
             <p className='mb-8 text-lg text-gray-600 md:text-xl'>
-              CuraBot makes gentle, personalized phone calls to remind your elderly loved ones to take their medications on time—giving you peace of mind, even when you can't be there.
+              CuraBot makes gentle, personalized phone calls to remind your
+              elderly loved ones to take their medications on time—giving you
+              peace of mind, even when you can&apos;t be there.
             </p>
-            
+
             <div className='flex flex-col items-center justify-center gap-4 sm:flex-row'>
               <Link href='/auth/sign-up'>
                 <Button className='w-full rounded-lg bg-teal-600 px-8 py-6 text-lg font-semibold text-white shadow-sm hover:bg-teal-700 sm:w-auto'>
@@ -101,10 +120,11 @@ export default async function Page() {
               How CuraBot Works
             </h2>
             <p className='mb-16 text-lg text-gray-600'>
-              Simple setup, reliable care. CuraBot handles the reminders so you can focus on what matters.
+              Simple setup, reliable care. CuraBot handles the reminders so you
+              can focus on what matters.
             </p>
           </div>
-          
+
           <div className='mx-auto grid max-w-4xl gap-12 md:grid-cols-3'>
             {/* Step 1 */}
             <div className='text-center'>
@@ -117,7 +137,8 @@ export default async function Page() {
                 Set Up Schedule
               </h3>
               <p className='text-gray-600'>
-                Enter medication times and your loved one's phone number. Takes less than 5 minutes.
+                Enter medication times and your loved one&apos;s phone number.
+                Takes less than 5 minutes.
               </p>
             </div>
 
@@ -132,7 +153,8 @@ export default async function Page() {
                 CuraBot Calls
               </h3>
               <p className='text-gray-600'>
-                At scheduled times, CuraBot makes a friendly call with a warm, natural voice they'll recognize.
+                At scheduled times, CuraBot makes a friendly call with a warm,
+                natural voice they&apos;ll recognize.
               </p>
             </div>
 
@@ -147,7 +169,8 @@ export default async function Page() {
                 Stay Informed
               </h3>
               <p className='text-gray-600'>
-                Get notifications when calls are completed and track medication adherence over time.
+                Get notifications when calls are completed and track medication
+                adherence over time.
               </p>
             </div>
           </div>
@@ -162,10 +185,10 @@ export default async function Page() {
               Built for Caregivers, Loved by Families
             </h2>
             <p className='mb-16 text-lg text-gray-600'>
-              Every feature designed with your family's wellbeing in mind.
+              Every feature designed with your family&apos;s wellbeing in mind.
             </p>
           </div>
-          
+
           <div className='mx-auto grid max-w-5xl gap-8 md:grid-cols-2'>
             {/* Feature 1 */}
             <div className='rounded-xl bg-white p-8 shadow-sm'>
@@ -176,7 +199,8 @@ export default async function Page() {
                 Natural Voice Calls
               </h3>
               <p className='text-gray-600'>
-                Not a robotic reminder—CuraBot speaks with a warm, patient voice that feels like a caring friend, not a machine.
+                Not a robotic reminder—CuraBot speaks with a warm, patient voice
+                that feels like a caring friend, not a machine.
               </p>
             </div>
 
@@ -189,7 +213,8 @@ export default async function Page() {
                 Flexible Scheduling
               </h3>
               <p className='text-gray-600'>
-                Set multiple daily reminders for different medications. CuraBot adapts to your loved one's routine.
+                Set multiple daily reminders for different medications. CuraBot
+                adapts to your loved one&apos;s routine.
               </p>
             </div>
 
@@ -202,7 +227,8 @@ export default async function Page() {
                 Wellness Check-Ins
               </h3>
               <p className='text-gray-600'>
-                Beyond medications, CuraBot can ask how they're feeling and alert you if something seems off.
+                Beyond medications, CuraBot can ask how they&apos;re feeling and
+                alert you if something seems off.
               </p>
             </div>
 
@@ -215,7 +241,8 @@ export default async function Page() {
                 Private & Secure
               </h3>
               <p className='text-gray-600'>
-                HIPAA-compliant and encrypted. Your family's health information is protected with enterprise-grade security.
+                HIPAA-compliant and encrypted. Your family&apos;s health
+                information is protected with enterprise-grade security.
               </p>
             </div>
           </div>
@@ -226,8 +253,11 @@ export default async function Page() {
       <section className='py-20'>
         <div className='container mx-auto px-6'>
           <div className='mx-auto max-w-3xl text-center'>
-            <blockquote className='mb-6 text-xl italic text-gray-700 md:text-2xl'>
-              "My mother lives alone 200 miles away. CuraBot calls her every morning and evening for her heart medication. For the first time in years, I don't wake up worried about whether she remembered her pills."
+            <blockquote className='mb-6 text-xl text-gray-700 italic md:text-2xl'>
+              &quot;My mother lives alone 200 miles away. CuraBot calls her
+              every morning and evening for her heart medication. For the first
+              time in years, I don&apos;t wake up worried about whether she
+              remembered her pills.&quot;
             </blockquote>
             <div className='text-gray-600'>
               <p className='font-semibold text-gray-900'>Sarah M.</p>
@@ -244,7 +274,8 @@ export default async function Page() {
             Give Your Loved One the Care They Deserve
           </h2>
           <p className='mb-8 text-lg text-teal-100'>
-            Join thousands of caregivers who trust CuraBot to help their families stay healthy.
+            Join thousands of caregivers who trust CuraBot to help their
+            families stay healthy.
           </p>
           <Link href='/auth/sign-up'>
             <Button className='rounded-lg bg-white px-8 py-6 text-lg font-semibold text-teal-600 shadow-sm hover:bg-gray-100'>
@@ -268,9 +299,15 @@ export default async function Page() {
               <span className='font-semibold text-gray-900'>CuraBot</span>
             </div>
             <div className='flex gap-8 text-sm text-gray-600'>
-              <Link href='/pricing' className='hover:text-gray-900'>Pricing</Link>
-              <Link href='/faq' className='hover:text-gray-900'>FAQ</Link>
-              <Link href='/auth/sign-in' className='hover:text-gray-900'>Sign In</Link>
+              <Link href='/pricing' className='hover:text-gray-900'>
+                Pricing
+              </Link>
+              <Link href='/faq' className='hover:text-gray-900'>
+                FAQ
+              </Link>
+              <Link href='/auth/sign-in' className='hover:text-gray-900'>
+                Sign In
+              </Link>
             </div>
             <p className='text-sm text-gray-500'>
               © 2025 CuraBot. All rights reserved.
