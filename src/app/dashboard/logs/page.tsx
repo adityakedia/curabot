@@ -49,6 +49,7 @@ export default function CallLogsPage() {
     patientName: string;
     callDate: string;
     callStatus: string;
+    duration?: number;
   } | null>(null);
 
   useEffect(() => {
@@ -104,7 +105,13 @@ export default function CallLogsPage() {
   };
 
   const formatDateTime = (dateStr: string) => {
+    if (!dateStr) {
+      return { date: 'No date', time: '' };
+    }
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return { date: 'Invalid date', time: '' };
+    }
     return {
       date: date.toLocaleDateString('en-US', {
         month: 'short',
@@ -296,7 +303,8 @@ export default function CallLogsPage() {
                                   transcript: log.transcript!,
                                   patientName: log.patientName,
                                   callDate: `${date} at ${time}`,
-                                  callStatus: log.status
+                                  callStatus: log.status,
+                                  duration: log.duration
                                 })
                               }
                             >
@@ -332,6 +340,7 @@ export default function CallLogsPage() {
         patientName={selectedTranscript?.patientName || ''}
         callDate={selectedTranscript?.callDate || ''}
         callStatus={selectedTranscript?.callStatus || ''}
+        duration={selectedTranscript?.duration}
       />
     </PageContainer>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2, Clock } from 'lucide-react';
 import {
@@ -89,6 +89,50 @@ export default function PatientsPage() {
     }
   };
 
+  // Sort patients: needs_attention and low adherence first
+  const sortedPatients = useMemo(() => {
+    return [...patients].sort((a, b) => {
+      // Priority 1: needs_attention status
+      if (a.status === 'needs_attention' && b.status !== 'needs_attention')
+        return -1;
+      if (b.status === 'needs_attention' && a.status !== 'needs_attention')
+        return 1;
+
+      // Priority 2: Low adherence rate (below 70%)
+      const aLowAdherence = a.adherenceRate < 70;
+      const bLowAdherence = b.adherenceRate < 70;
+      if (aLowAdherence && !bLowAdherence) return -1;
+      if (bLowAdherence && !aLowAdherence) return 1;
+
+      // Priority 3: Sort by adherence rate ascending (lowest first)
+      if (a.adherenceRate !== b.adherenceRate) {
+        return a.adherenceRate - b.adherenceRate;
+      }
+
+      // Finally, sort by name
+      return a.name.localeCompare(b.name);
+    });
+  }, [patients]);
+
+  const getPatientPriorityStatus = (patient: Patient) => {
+    const missedCalls =
+      patient.callLogs?.filter((c) => c.status === 'missed').length || 0;
+    const totalCalls = patient.callLogs?.length || 0;
+    const missedRatio = totalCalls > 0 ? missedCalls / totalCalls : 0;
+
+    if (
+      patient.status === 'needs_attention' ||
+      patient.adherenceRate < 70 ||
+      missedRatio > 0.3
+    ) {
+      return 'critical';
+    }
+    if (patient.adherenceRate < 85 || missedRatio > 0.15) {
+      return 'warning';
+    }
+    return 'good';
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -171,76 +215,125 @@ export default function PatientsPage() {
         </PageHeader>
 
         {/* Patients List */}
-        {patients.length > 0 ? (
+        {sortedPatients.length > 0 ? (
           <div className='space-y-4'>
-            {patients.map((patient) => (
-              <Link key={patient.id} href={`/dashboard/patients/${patient.id}`}>
-                <div className='bg-card border-border hover:border-primary/20 cursor-pointer rounded-xl border p-6 transition-all hover:shadow-md'>
-                  <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
-                    {/* Patient Info */}
-                    <div className='flex items-center gap-4'>
-                      <div className='bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full'>
-                        <span className='text-primary text-lg font-semibold'>
-                          {patient.name
-                            .split(' ')
-                            .map((n) => n[0])
-                            .join('')}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className='text-foreground font-semibold'>
-                          {patient.name}
-                        </h3>
-                        <p className='text-muted-foreground text-sm'>
-                          {patient.age} years • {patient.phone}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Medications */}
-                    <div className='flex flex-wrap gap-2'>
-                      {patient.medications.slice(0, 3).map((med) => (
-                        <Badge
-                          key={med.id}
-                          variant='secondary'
-                          className='text-xs'
+            {sortedPatients.map((patient) => {
+              const priorityStatus = getPatientPriorityStatus(patient);
+              return (
+                <Link
+                  key={patient.id}
+                  href={`/dashboard/patients/${patient.id}`}
+                >
+                  <div
+                    className={`bg-card border-border hover:border-primary/20 cursor-pointer rounded-xl border p-6 transition-all hover:shadow-md ${
+                      priorityStatus === 'critical'
+                        ? 'border-l-4 border-l-red-500'
+                        : priorityStatus === 'warning'
+                          ? 'border-l-4 border-l-amber-500'
+                          : ''
+                    }`}
+                  >
+                    <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
+                      {/* Patient Info */}
+                      <div className='flex items-center gap-4'>
+                        <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                            priorityStatus === 'critical'
+                              ? 'bg-red-100 dark:bg-red-900/30'
+                              : priorityStatus === 'warning'
+                                ? 'bg-amber-100 dark:bg-amber-900/30'
+                                : 'bg-primary/10'
+                          }`}
                         >
-                          {med.name}
-                        </Badge>
-                      ))}
-                      {patient.medications.length > 3 && (
-                        <Badge variant='secondary' className='text-xs'>
-                          +{patient.medications.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Status */}
-                    <div className='flex items-center gap-6'>
-                      <div className='text-right'>
-                        <div className='text-muted-foreground flex items-center gap-1 text-sm'>
-                          <Clock className='h-3 w-3' />
-                          <span>{patient.medications.length} medications</span>
+                          <span
+                            className={`text-lg font-semibold ${
+                              priorityStatus === 'critical'
+                                ? 'text-red-600 dark:text-red-400'
+                                : priorityStatus === 'warning'
+                                  ? 'text-amber-600 dark:text-amber-400'
+                                  : 'text-primary'
+                            }`}
+                          >
+                            {patient.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
+                          </span>
+                        </div>
+                        <div>
+                          <div className='flex items-center gap-2'>
+                            <h3 className='text-foreground font-semibold'>
+                              {patient.name}
+                            </h3>
+                            {priorityStatus === 'critical' && (
+                              <Badge className='bg-red-100 text-xs text-red-700 dark:bg-red-900/30 dark:text-red-400'>
+                                Needs Attention
+                              </Badge>
+                            )}
+                          </div>
+                          <p className='text-muted-foreground text-sm'>
+                            {patient.age} years • {patient.phone}
+                          </p>
                         </div>
                       </div>
 
-                      <div className='flex items-center gap-2'>
-                        <div
-                          className={`h-2 w-2 rounded-full ${
-                            patient.status === 'active'
-                              ? 'bg-green-500'
-                              : 'bg-amber-500'
-                          }`}
-                        />
-                        <span className='text-sm font-medium'>
-                          {patient.adherenceRate}%
-                        </span>
+                      {/* Medications */}
+                      <div className='flex flex-wrap gap-2'>
+                        {patient.medications.slice(0, 3).map((med) => (
+                          <Badge
+                            key={med.id}
+                            variant='secondary'
+                            className='text-xs'
+                          >
+                            {med.name}
+                          </Badge>
+                        ))}
+                        {patient.medications.length > 3 && (
+                          <Badge variant='secondary' className='text-xs'>
+                            +{patient.medications.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Status */}
+                      <div className='flex items-center gap-6'>
+                        <div className='text-right'>
+                          <div className='text-muted-foreground flex items-center gap-1 text-sm'>
+                            <Clock className='h-3 w-3' />
+                            <span>
+                              {patient.medications.length} medications
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className='flex items-center gap-2'>
+                          <div
+                            className={`h-3 w-3 rounded-full ${
+                              priorityStatus === 'critical'
+                                ? 'animate-pulse bg-red-500'
+                                : priorityStatus === 'warning'
+                                  ? 'bg-amber-500'
+                                  : 'bg-green-500'
+                            }`}
+                          />
+                          <span
+                            className={`text-sm font-medium ${
+                              priorityStatus === 'critical'
+                                ? 'text-red-600 dark:text-red-400'
+                                : priorityStatus === 'warning'
+                                  ? 'text-amber-600 dark:text-amber-400'
+                                  : ''
+                            }`}
+                          >
+                            {patient.adherenceRate}%
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className='flex flex-col items-center justify-center py-16'>

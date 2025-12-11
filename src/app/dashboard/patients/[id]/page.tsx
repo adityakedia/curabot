@@ -34,11 +34,12 @@ import {
   FileText,
   Loader2
 } from 'lucide-react';
-import { IconPhone, IconPill, IconHeart, IconFile, IconTimeline } from '@tabler/icons-react';
+import { IconPhone, IconPill, IconHeart, IconFile } from '@tabler/icons-react';
 import Link from 'next/link';
 import { PageContainer } from '@/components/dashboard-modern/page-container';
 import { PageHeader } from '@/components/dashboard-modern/page-header';
 import { MetricCard } from '@/components/dashboard-modern/metric-card';
+import { TranscriptModal } from '@/components/modal/transcript-modal';
 import { toast } from 'sonner';
 
 interface Medication {
@@ -56,6 +57,7 @@ interface CallLog {
   status: string;
   medications: string[];
   notes?: string;
+  transcript?: string;
 }
 
 interface MedicalRecord {
@@ -86,11 +88,11 @@ interface Patient {
 export default function PatientDetailPage() {
   const params = useParams();
   const patientId = params.id as string;
-  
+
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [recordDialogOpen, setRecordDialogOpen] = useState(false);
   const [recordForm, setRecordForm] = useState({
     type: 'diagnosis',
@@ -100,6 +102,14 @@ export default function PatientDetailPage() {
   });
   const [submitting, setSubmitting] = useState(false);
 
+  const [selectedTranscript, setSelectedTranscript] = useState<{
+    transcript: string;
+    patientName: string;
+    callDate: string;
+    callStatus: string;
+    duration: number;
+  } | null>(null);
+
   useEffect(() => {
     fetchPatient();
   }, [patientId]);
@@ -108,11 +118,11 @@ export default function PatientDetailPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/patients/${patientId}`);
-      
+
       if (!response.ok) {
         throw new Error('Patient not found');
       }
-      
+
       const data = await response.json();
       setPatient(data.patient);
     } catch (err) {
@@ -168,12 +178,48 @@ export default function PatientDetailPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Badge className='bg-green-100 text-green-700 hover:bg-green-100'>Completed</Badge>;
+        return (
+          <Badge className='bg-green-100 text-green-700 hover:bg-green-100'>
+            Completed
+          </Badge>
+        );
       case 'missed':
-        return <Badge className='bg-red-100 text-red-700 hover:bg-red-100'>Missed</Badge>;
+        return (
+          <Badge className='bg-red-100 text-red-700 hover:bg-red-100'>
+            Missed
+          </Badge>
+        );
       default:
-        return <Badge className='bg-amber-100 text-amber-700 hover:bg-amber-100'>Pending</Badge>;
+        return (
+          <Badge className='bg-amber-100 text-amber-700 hover:bg-amber-100'>
+            Pending
+          </Badge>
+        );
     }
+  };
+
+  const formatCallDate = (dateStr: string) => {
+    if (!dateStr) {
+      return { date: 'No date', time: '', full: 'Unknown date' };
+    }
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return { date: 'Invalid date', time: '', full: 'Invalid date' };
+    }
+    const dateFormatted = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    const timeFormatted = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+    return {
+      date: dateFormatted,
+      time: timeFormatted,
+      full: `${dateFormatted} at ${timeFormatted}`
+    };
   };
 
   const getRecordTypeIcon = (type: string) => {
@@ -191,7 +237,7 @@ export default function PatientDetailPage() {
     return (
       <PageContainer>
         <div className='flex min-h-[60vh] items-center justify-center'>
-          <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
+          <Loader2 className='text-muted-foreground h-8 w-8 animate-spin' />
         </div>
       </PageContainer>
     );
@@ -201,7 +247,9 @@ export default function PatientDetailPage() {
     return (
       <PageContainer>
         <div className='flex min-h-[60vh] flex-col items-center justify-center'>
-          <p className='text-destructive mb-4'>{error || 'Patient not found'}</p>
+          <p className='text-destructive mb-4'>
+            {error || 'Patient not found'}
+          </p>
           <Link href='/dashboard/patients'>
             <Button>Back to Patients</Button>
           </Link>
@@ -210,26 +258,27 @@ export default function PatientDetailPage() {
     );
   }
 
-  const completedCalls = patient.callLogs?.filter((c) => c.status === 'completed').length || 0;
+  const completedCalls =
+    patient.callLogs?.filter((c) => c.status === 'completed').length || 0;
+
+  const formatPatientSince = (dateStr: string) => {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return 'Recently added';
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  };
 
   return (
     <PageContainer>
       <div className='space-y-8'>
         <PageHeader
           title={patient.name}
-          description={`${patient.age} years old • Patient since ${new Date(patient.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}
+          description={`${patient.age} years old • Patient since ${formatPatientSince(patient.createdAt)}`}
         >
           <div className='flex gap-2'>
             <Link href='/dashboard/patients'>
               <Button variant='outline' className='flex items-center gap-2'>
                 <ArrowLeft className='h-4 w-4' />
                 Back
-              </Button>
-            </Link>
-            <Link href={`/dashboard/patients/${patientId}/timeline`}>
-              <Button variant='outline' className='flex items-center gap-2'>
-                <IconTimeline className='h-4 w-4' />
-                Timeline
               </Button>
             </Link>
             <Button className='flex items-center gap-2'>
@@ -240,10 +289,30 @@ export default function PatientDetailPage() {
         </PageHeader>
 
         <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
-          <MetricCard title='Adherence Rate' value={`${patient.adherenceRate}%`} description='Medication compliance' icon={IconHeart} />
-          <MetricCard title='Total Calls' value={patient.callLogs?.length || 0} description='All time' icon={IconPhone} />
-          <MetricCard title='Completed' value={completedCalls} description='Successful reminders' icon={IconPill} />
-          <MetricCard title='Records' value={patient.medicalRecords?.length || 0} description='Medical documents' icon={IconFile} />
+          <MetricCard
+            title='Adherence Rate'
+            value={`${patient.adherenceRate}%`}
+            description='Medication compliance'
+            icon={IconHeart}
+          />
+          <MetricCard
+            title='Total Calls'
+            value={patient.callLogs?.length || 0}
+            description='All time'
+            icon={IconPhone}
+          />
+          <MetricCard
+            title='Completed'
+            value={completedCalls}
+            description='Successful reminders'
+            icon={IconPill}
+          />
+          <MetricCard
+            title='Records'
+            value={patient.medicalRecords?.length || 0}
+            description='Medical documents'
+            icon={IconFile}
+          />
         </div>
 
         <Tabs defaultValue='schedule' className='space-y-6'>
@@ -256,26 +325,42 @@ export default function PatientDetailPage() {
 
           <TabsContent value='schedule' className='space-y-4'>
             <div className='bg-card border-border rounded-xl border p-6'>
-              <h3 className='text-foreground mb-4 text-lg font-semibold'>Daily Medication Schedule</h3>
+              <h3 className='text-foreground mb-4 text-lg font-semibold'>
+                Daily Medication Schedule
+              </h3>
               {patient.medications?.length > 0 ? (
                 <div className='space-y-4'>
                   {patient.medications.map((med) => (
-                    <div key={med.id} className='bg-muted/50 flex items-center justify-between rounded-lg p-4'>
+                    <div
+                      key={med.id}
+                      className='bg-muted/50 flex items-center justify-between rounded-lg p-4'
+                    >
                       <div className='flex items-center gap-4'>
                         <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
                           <Clock className='text-primary h-5 w-5' />
                         </div>
                         <div>
-                          <p className='text-foreground font-medium'>{med.name}</p>
-                          <p className='text-muted-foreground text-sm'>{med.dosage} • {med.frequency}</p>
+                          <p className='text-foreground font-medium'>
+                            {med.name}
+                          </p>
+                          <p className='text-muted-foreground text-sm'>
+                            {med.dosage} • {med.frequency}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant='outline' className='text-lg font-semibold'>{med.time}</Badge>
+                      <Badge
+                        variant='outline'
+                        className='text-lg font-semibold'
+                      >
+                        {med.time}
+                      </Badge>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className='text-muted-foreground text-center py-8'>No medications scheduled</p>
+                <p className='text-muted-foreground py-8 text-center'>
+                  No medications scheduled
+                </p>
               )}
             </div>
           </TabsContent>
@@ -283,48 +368,107 @@ export default function PatientDetailPage() {
           <TabsContent value='records' className='space-y-4'>
             <div className='bg-card border-border rounded-xl border'>
               <div className='flex items-center justify-between border-b p-4'>
-                <h3 className='text-foreground font-semibold'>Medical Records</h3>
-                <Dialog open={recordDialogOpen} onOpenChange={setRecordDialogOpen}>
+                <h3 className='text-foreground font-semibold'>
+                  Medical Records
+                </h3>
+                <Dialog
+                  open={recordDialogOpen}
+                  onOpenChange={setRecordDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button size='sm' className='flex items-center gap-2'>
-                      <Plus className='h-4 w-4' />Add Record
+                      <Plus className='h-4 w-4' />
+                      Add Record
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Add Medical Record</DialogTitle>
-                      <DialogDescription>Add a diagnosis, prescription, or test report.</DialogDescription>
+                      <DialogDescription>
+                        Add a diagnosis, prescription, or test report.
+                      </DialogDescription>
                     </DialogHeader>
                     <div className='space-y-4 py-4'>
                       <div className='space-y-2'>
-                        <label className='text-sm font-medium'>Record Type</label>
-                        <Select value={recordForm.type} onValueChange={(v) => setRecordForm({ ...recordForm, type: v })}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                        <label className='text-sm font-medium'>
+                          Record Type
+                        </label>
+                        <Select
+                          value={recordForm.type}
+                          onValueChange={(v) =>
+                            setRecordForm({ ...recordForm, type: v })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             <SelectItem value='diagnosis'>Diagnosis</SelectItem>
-                            <SelectItem value='prescription'>Prescription</SelectItem>
-                            <SelectItem value='test_report'>Test Report</SelectItem>
+                            <SelectItem value='prescription'>
+                              Prescription
+                            </SelectItem>
+                            <SelectItem value='test_report'>
+                              Test Report
+                            </SelectItem>
                             <SelectItem value='other'>Other</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className='space-y-2'>
                         <label className='text-sm font-medium'>Title</label>
-                        <Input placeholder='e.g., Blood Test Results' value={recordForm.title} onChange={(e) => setRecordForm({ ...recordForm, title: e.target.value })} />
+                        <Input
+                          placeholder='e.g., Blood Test Results'
+                          value={recordForm.title}
+                          onChange={(e) =>
+                            setRecordForm({
+                              ...recordForm,
+                              title: e.target.value
+                            })
+                          }
+                        />
                       </div>
                       <div className='space-y-2'>
                         <label className='text-sm font-medium'>Date</label>
-                        <Input type='date' value={recordForm.recordDate} onChange={(e) => setRecordForm({ ...recordForm, recordDate: e.target.value })} />
+                        <Input
+                          type='date'
+                          value={recordForm.recordDate}
+                          onChange={(e) =>
+                            setRecordForm({
+                              ...recordForm,
+                              recordDate: e.target.value
+                            })
+                          }
+                        />
                       </div>
                       <div className='space-y-2'>
-                        <label className='text-sm font-medium'>Description</label>
-                        <Textarea placeholder='Add notes...' value={recordForm.description} onChange={(e) => setRecordForm({ ...recordForm, description: e.target.value })} rows={3} />
+                        <label className='text-sm font-medium'>
+                          Description
+                        </label>
+                        <Textarea
+                          placeholder='Add notes...'
+                          value={recordForm.description}
+                          onChange={(e) =>
+                            setRecordForm({
+                              ...recordForm,
+                              description: e.target.value
+                            })
+                          }
+                          rows={3}
+                        />
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button variant='outline' onClick={() => setRecordDialogOpen(false)}>Cancel</Button>
+                      <Button
+                        variant='outline'
+                        onClick={() => setRecordDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
                       <Button onClick={handleAddRecord} disabled={submitting}>
-                        {submitting && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}Add Record
+                        {submitting && (
+                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                        )}
+                        Add Record
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -333,26 +477,42 @@ export default function PatientDetailPage() {
               <div className='divide-y'>
                 {patient.medicalRecords?.length > 0 ? (
                   patient.medicalRecords.map((record) => (
-                    <div key={record.id} className='p-4 hover:bg-muted/50'>
+                    <div key={record.id} className='hover:bg-muted/50 p-4'>
                       <div className='flex items-start gap-3'>
                         {getRecordTypeIcon(record.type)}
                         <div>
                           <div className='flex items-center gap-2'>
-                            <span className='text-foreground font-medium'>{record.title}</span>
-                            <Badge variant='secondary' className='text-xs capitalize'>{record.type.replace('_', ' ')}</Badge>
+                            <span className='text-foreground font-medium'>
+                              {record.title}
+                            </span>
+                            <Badge
+                              variant='secondary'
+                              className='text-xs capitalize'
+                            >
+                              {record.type.replace('_', ' ')}
+                            </Badge>
                           </div>
-                          <p className='text-muted-foreground text-sm mt-1'>
-                            {new Date(record.recordDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          <p className='text-muted-foreground mt-1 text-sm'>
+                            {new Date(record.recordDate).toLocaleDateString(
+                              'en-US',
+                              { year: 'numeric', month: 'long', day: 'numeric' }
+                            )}
                           </p>
-                          {record.description && <p className='text-muted-foreground text-sm mt-2'>{record.description}</p>}
+                          {record.description && (
+                            <p className='text-muted-foreground mt-2 text-sm'>
+                              {record.description}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className='p-8 text-center'>
-                    <FileText className='h-8 w-8 text-muted-foreground mx-auto mb-2' />
-                    <p className='text-muted-foreground'>No medical records yet</p>
+                    <FileText className='text-muted-foreground mx-auto mb-2 h-8 w-8' />
+                    <p className='text-muted-foreground'>
+                      No medical records yet
+                    </p>
                   </div>
                 )}
               </div>
@@ -361,33 +521,83 @@ export default function PatientDetailPage() {
 
           <TabsContent value='logs' className='space-y-4'>
             <div className='bg-card border-border rounded-xl border'>
-              <div className='border-b p-4'><h3 className='text-foreground font-semibold'>Recent Calls</h3></div>
+              <div className='border-b p-4'>
+                <h3 className='text-foreground font-semibold'>Recent Calls</h3>
+              </div>
               <div className='divide-y'>
                 {patient.callLogs?.length > 0 ? (
-                  patient.callLogs.map((log) => (
-                    <div key={log.id} className='p-4'>
-                      <div className='flex items-start justify-between'>
-                        <div className='flex items-start gap-3'>
-                          {getStatusIcon(log.status)}
-                          <div>
-                            <div className='flex items-center gap-2'>
-                              <span className='text-foreground font-medium'>
-                                {new Date(log.scheduledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at {new Date(log.scheduledAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                              </span>
-                              {getStatusBadge(log.status)}
-                            </div>
-                            {log.notes && <p className='text-muted-foreground mt-1 text-sm'>{log.notes}</p>}
-                            <div className='mt-2 flex flex-wrap gap-1'>
-                              {log.medications.map((med) => (<Badge key={med} variant='secondary' className='text-xs'>{med}</Badge>))}
+                  patient.callLogs.map((log) => {
+                    const callDateTime = formatCallDate(log.scheduledAt);
+                    return (
+                      <div key={log.id} className='p-4'>
+                        <div className='flex items-start justify-between'>
+                          <div className='flex items-start gap-3'>
+                            {getStatusIcon(log.status)}
+                            <div>
+                              <div className='flex items-center gap-2'>
+                                <span className='text-foreground font-medium'>
+                                  {callDateTime.full}
+                                </span>
+                                {getStatusBadge(log.status)}
+                              </div>
+                              {log.notes && (
+                                <p className='text-muted-foreground mt-1 text-sm'>
+                                  {log.notes}
+                                </p>
+                              )}
+                              <div className='mt-2 flex flex-wrap gap-1'>
+                                {log.medications.map((med) => (
+                                  <Badge
+                                    key={med}
+                                    variant='secondary'
+                                    className='text-xs'
+                                  >
+                                    {med}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
                           </div>
+                          <div className='flex items-center gap-3'>
+                            {log.transcript && (
+                              <Button
+                                variant='ghost'
+                                size='sm'
+                                className='text-muted-foreground hover:text-foreground gap-1'
+                                onClick={() =>
+                                  setSelectedTranscript({
+                                    transcript: log.transcript!,
+                                    patientName: patient.name,
+                                    callDate: callDateTime.full,
+                                    callStatus: log.status,
+                                    duration: log.duration
+                                  })
+                                }
+                              >
+                                <FileText className='h-4 w-4' />
+                                <span className='hidden sm:inline'>
+                                  Transcript
+                                </span>
+                              </Button>
+                            )}
+                            {log.duration > 0 && (
+                              <span className='text-muted-foreground text-sm'>
+                                Duration: {Math.floor(log.duration / 60)}:
+                                {(log.duration % 60)
+                                  .toString()
+                                  .padStart(2, '0')}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        {log.duration > 0 && <span className='text-muted-foreground text-sm'>Duration: {Math.floor(log.duration / 60)}:{(log.duration % 60).toString().padStart(2, '0')}</span>}
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
-                  <div className='p-8 text-center'><Phone className='h-8 w-8 text-muted-foreground mx-auto mb-2' /><p className='text-muted-foreground'>No call history yet</p></div>
+                  <div className='p-8 text-center'>
+                    <Phone className='text-muted-foreground mx-auto mb-2 h-8 w-8' />
+                    <p className='text-muted-foreground'>No call history yet</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -396,25 +606,85 @@ export default function PatientDetailPage() {
           <TabsContent value='profile' className='space-y-4'>
             <div className='grid gap-6 md:grid-cols-2'>
               <div className='bg-card border-border rounded-xl border p-6'>
-                <h3 className='text-foreground mb-4 text-lg font-semibold'>Contact Information</h3>
+                <h3 className='text-foreground mb-4 text-lg font-semibold'>
+                  Contact Information
+                </h3>
                 <dl className='space-y-4'>
-                  <div><dt className='text-muted-foreground text-sm'>Phone Number</dt><dd className='text-foreground font-medium'>{patient.phone}</dd></div>
-                  {patient.emergencyContact && <div><dt className='text-muted-foreground text-sm'>Emergency Contact</dt><dd className='text-foreground font-medium'>{patient.emergencyContact}</dd></div>}
-                  {patient.emergencyPhone && <div><dt className='text-muted-foreground text-sm'>Emergency Phone</dt><dd className='text-foreground font-medium'>{patient.emergencyPhone}</dd></div>}
+                  <div>
+                    <dt className='text-muted-foreground text-sm'>
+                      Phone Number
+                    </dt>
+                    <dd className='text-foreground font-medium'>
+                      {patient.phone}
+                    </dd>
+                  </div>
+                  {patient.emergencyContact && (
+                    <div>
+                      <dt className='text-muted-foreground text-sm'>
+                        Emergency Contact
+                      </dt>
+                      <dd className='text-foreground font-medium'>
+                        {patient.emergencyContact}
+                      </dd>
+                    </div>
+                  )}
+                  {patient.emergencyPhone && (
+                    <div>
+                      <dt className='text-muted-foreground text-sm'>
+                        Emergency Phone
+                      </dt>
+                      <dd className='text-foreground font-medium'>
+                        {patient.emergencyPhone}
+                      </dd>
+                    </div>
+                  )}
                 </dl>
               </div>
               <div className='bg-card border-border rounded-xl border p-6'>
-                <h3 className='text-foreground mb-4 text-lg font-semibold'>Medical Information</h3>
+                <h3 className='text-foreground mb-4 text-lg font-semibold'>
+                  Medical Information
+                </h3>
                 <dl className='space-y-4'>
-                  {patient.medicalConditions && <div><dt className='text-muted-foreground text-sm'>Medical Conditions</dt><dd className='text-foreground'>{patient.medicalConditions}</dd></div>}
-                  {patient.notes && <div><dt className='text-muted-foreground text-sm'>Special Notes</dt><dd className='text-foreground'>{patient.notes}</dd></div>}
-                  {!patient.medicalConditions && !patient.notes && <p className='text-muted-foreground'>No additional medical information</p>}
+                  {patient.medicalConditions && (
+                    <div>
+                      <dt className='text-muted-foreground text-sm'>
+                        Medical Conditions
+                      </dt>
+                      <dd className='text-foreground'>
+                        {patient.medicalConditions}
+                      </dd>
+                    </div>
+                  )}
+                  {patient.notes && (
+                    <div>
+                      <dt className='text-muted-foreground text-sm'>
+                        Special Notes
+                      </dt>
+                      <dd className='text-foreground'>{patient.notes}</dd>
+                    </div>
+                  )}
+                  {!patient.medicalConditions && !patient.notes && (
+                    <p className='text-muted-foreground'>
+                      No additional medical information
+                    </p>
+                  )}
                 </dl>
               </div>
             </div>
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Transcript Modal */}
+      <TranscriptModal
+        open={!!selectedTranscript}
+        onOpenChange={(open) => !open && setSelectedTranscript(null)}
+        transcript={selectedTranscript?.transcript || ''}
+        patientName={selectedTranscript?.patientName || ''}
+        callDate={selectedTranscript?.callDate || ''}
+        callStatus={selectedTranscript?.callStatus || ''}
+        duration={selectedTranscript?.duration}
+      />
     </PageContainer>
   );
 }
