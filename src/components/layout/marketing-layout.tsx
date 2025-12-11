@@ -20,12 +20,6 @@ export default function MarketingLayout({
             </Link>
             <nav className='hidden items-center gap-6 md:flex'>
               <Link
-                href='/pricing'
-                className='text-sm font-medium text-gray-600 transition-colors hover:text-gray-900'
-              >
-                Pricing
-              </Link>
-              <Link
                 href='/faq'
                 className='text-sm font-medium text-gray-600 transition-colors hover:text-gray-900'
               >
@@ -83,15 +77,7 @@ export default function MarketingLayout({
                     <span>Features</span>
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href='/pricing'
-                    className='flex items-center gap-2 text-white/70 transition-colors hover:text-white'
-                  >
-                    <IconTarget className='h-4 w-4' />
-                    <span>Pricing</span>
-                  </Link>
-                </li>
+
                 <li>
                   <Link
                     href='/faq'
