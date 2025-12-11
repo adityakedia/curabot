@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -17,17 +18,14 @@ import {
   Search,
   Filter,
   Loader2,
-  Phone
+  Phone,
+  FileText
 } from 'lucide-react';
-import {
-  IconPhone,
-  IconCheck,
-  IconX,
-  IconClock
-} from '@tabler/icons-react';
+import { IconPhone, IconCheck, IconX, IconClock } from '@tabler/icons-react';
 import Link from 'next/link';
 import { PageContainer } from '@/components/dashboard-modern/page-container';
 import { MetricCard } from '@/components/dashboard-modern/metric-card';
+import { TranscriptModal } from '@/components/modal/transcript-modal';
 
 interface CallLog {
   id: string;
@@ -38,6 +36,7 @@ interface CallLog {
   status: string;
   medications: string[];
   notes?: string;
+  transcript?: string;
 }
 
 export default function CallLogsPage() {
@@ -45,6 +44,12 @@ export default function CallLogsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedTranscript, setSelectedTranscript] = useState<{
+    transcript: string;
+    patientName: string;
+    callDate: string;
+    callStatus: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchCallLogs();
@@ -67,18 +72,29 @@ export default function CallLogsPage() {
 
   // Filter logs
   const filteredLogs = callLogs.filter((log) => {
-    const matchesSearch = log.patientName?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = log.patientName
+      ?.toLowerCase()
+      .includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || log.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   // Calculate metrics
   const today = new Date().toISOString().split('T')[0];
-  const todayLogs = callLogs.filter((log) => log.scheduledAt?.startsWith(today));
-  const completedToday = todayLogs.filter((l) => l.status === 'completed').length;
+  const todayLogs = callLogs.filter((log) =>
+    log.scheduledAt?.startsWith(today)
+  );
+  const completedToday = todayLogs.filter(
+    (l) => l.status === 'completed'
+  ).length;
   const missedToday = todayLogs.filter((l) => l.status === 'missed').length;
-  const totalCompleted = callLogs.filter((l) => l.status === 'completed').length;
-  const successRate = callLogs.length > 0 ? Math.round((totalCompleted / callLogs.length) * 100) : 0;
+  const totalCompleted = callLogs.filter(
+    (l) => l.status === 'completed'
+  ).length;
+  const successRate =
+    callLogs.length > 0
+      ? Math.round((totalCompleted / callLogs.length) * 100)
+      : 0;
 
   const formatDuration = (seconds: number) => {
     if (seconds <= 0) return '0:00';
@@ -90,8 +106,15 @@ export default function CallLogsPage() {
   const formatDateTime = (dateStr: string) => {
     const date = new Date(dateStr);
     return {
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      date: date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      time: date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit'
+      })
     };
   };
 
@@ -109,11 +132,23 @@ export default function CallLogsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Badge className='bg-green-100 text-green-700 hover:bg-green-100'>Completed</Badge>;
+        return (
+          <Badge className='bg-green-100 text-green-700 hover:bg-green-100'>
+            Completed
+          </Badge>
+        );
       case 'missed':
-        return <Badge className='bg-red-100 text-red-700 hover:bg-red-100'>Missed</Badge>;
+        return (
+          <Badge className='bg-red-100 text-red-700 hover:bg-red-100'>
+            Missed
+          </Badge>
+        );
       default:
-        return <Badge className='bg-amber-100 text-amber-700 hover:bg-amber-100'>Pending</Badge>;
+        return (
+          <Badge className='bg-amber-100 text-amber-700 hover:bg-amber-100'>
+            Pending
+          </Badge>
+        );
     }
   };
 
@@ -162,7 +197,7 @@ export default function CallLogsPage() {
         <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
           <div className='flex flex-1 items-center gap-4'>
             <div className='relative max-w-sm flex-1'>
-              <Search className='text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2' />
+              <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
               <Input
                 placeholder='Search by patient name...'
                 value={searchQuery}
@@ -193,22 +228,27 @@ export default function CallLogsPage() {
           </div>
           {loading ? (
             <div className='flex items-center justify-center p-12'>
-              <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
+              <Loader2 className='text-muted-foreground h-8 w-8 animate-spin' />
             </div>
           ) : (
             <div className='divide-y'>
               {filteredLogs.length === 0 ? (
                 <div className='p-8 text-center'>
-                  <Phone className='h-8 w-8 text-muted-foreground mx-auto mb-2' />
+                  <Phone className='text-muted-foreground mx-auto mb-2 h-8 w-8' />
                   <p className='text-muted-foreground'>
-                    {callLogs.length === 0 ? 'No call logs yet. Calls will appear here as they are made.' : 'No calls found matching your filters.'}
+                    {callLogs.length === 0
+                      ? 'No call logs yet. Calls will appear here as they are made.'
+                      : 'No calls found matching your filters.'}
                   </p>
                 </div>
               ) : (
                 filteredLogs.map((log) => {
                   const { date, time } = formatDateTime(log.scheduledAt);
                   return (
-                    <div key={log.id} className='p-4 transition-colors hover:bg-muted/50'>
+                    <div
+                      key={log.id}
+                      className='hover:bg-muted/50 p-4 transition-colors'
+                    >
                       <div className='flex items-start justify-between'>
                         <div className='flex items-start gap-3'>
                           {getStatusIcon(log.status)}
@@ -233,7 +273,11 @@ export default function CallLogsPage() {
                             {log.medications?.length > 0 && (
                               <div className='mt-2 flex flex-wrap gap-1'>
                                 {log.medications.map((med) => (
-                                  <Badge key={med} variant='secondary' className='text-xs'>
+                                  <Badge
+                                    key={med}
+                                    variant='secondary'
+                                    className='text-xs'
+                                  >
                                     {med}
                                   </Badge>
                                 ))}
@@ -241,10 +285,34 @@ export default function CallLogsPage() {
                             )}
                           </div>
                         </div>
-                        <div className='text-muted-foreground text-right text-sm'>
-                          {log.duration > 0 && (
-                            <span>Duration: {formatDuration(log.duration)}</span>
+                        <div className='flex items-center gap-3'>
+                          {log.transcript && (
+                            <Button
+                              variant='ghost'
+                              size='sm'
+                              className='text-muted-foreground hover:text-foreground gap-1'
+                              onClick={() =>
+                                setSelectedTranscript({
+                                  transcript: log.transcript!,
+                                  patientName: log.patientName,
+                                  callDate: `${date} at ${time}`,
+                                  callStatus: log.status
+                                })
+                              }
+                            >
+                              <FileText className='h-4 w-4' />
+                              <span className='hidden sm:inline'>
+                                Transcript
+                              </span>
+                            </Button>
                           )}
+                          <div className='text-muted-foreground text-right text-sm'>
+                            {log.duration > 0 && (
+                              <span>
+                                Duration: {formatDuration(log.duration)}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -255,6 +323,16 @@ export default function CallLogsPage() {
           )}
         </div>
       </div>
+
+      {/* Transcript Modal */}
+      <TranscriptModal
+        open={!!selectedTranscript}
+        onOpenChange={(open) => !open && setSelectedTranscript(null)}
+        transcript={selectedTranscript?.transcript || ''}
+        patientName={selectedTranscript?.patientName || ''}
+        callDate={selectedTranscript?.callDate || ''}
+        callStatus={selectedTranscript?.callStatus || ''}
+      />
     </PageContainer>
   );
 }

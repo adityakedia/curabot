@@ -77,46 +77,184 @@ VALUES
 -- ============================================================================
 
 -- Margaret Johnson's call logs
-INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes)
+INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes, transcript)
 VALUES
-  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '6 hours', NOW() - INTERVAL '6 hours' + INTERVAL '10 seconds', NOW() - INTERVAL '6 hours' + INTERVAL '2 minutes 34 seconds', 154, 'completed', ARRAY['Metformin', 'Lisinopril'], 'Patient confirmed taking medications. Mentioned feeling well today.'),
-  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day' + INTERVAL '5 seconds', NOW() - INTERVAL '1 day' + INTERVAL '1 minute 45 seconds', 105, 'completed', ARRAY['Metformin'], 'Evening medication confirmed. Patient asked about dinner plans.'),
-  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 day 6 hours', NULL, NULL, 0, 'missed', ARRAY['Aspirin'], 'No answer after 3 attempts.'),
-  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 day 5 hours 45 minutes', NOW() - INTERVAL '1 day 5 hours 45 minutes' + INTERVAL '8 seconds', NOW() - INTERVAL '1 day 5 hours 45 minutes' + INTERVAL '1 minute 22 seconds', 82, 'completed', ARRAY['Aspirin'], 'Retry successful. Patient confirmed medication.'),
-  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days' + INTERVAL '12 seconds', NOW() - INTERVAL '2 days' + INTERVAL '2 minutes 10 seconds', 130, 'completed', ARRAY['Metformin', 'Lisinopril'], 'Morning medications confirmed.');
+  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '6 hours', NOW() - INTERVAL '6 hours' + INTERVAL '10 seconds', NOW() - INTERVAL '6 hours' + INTERVAL '2 minutes 34 seconds', 154, 'completed', ARRAY['Metformin', 'Lisinopril'], 'Patient confirmed taking medications. Mentioned feeling well today.',
+   'Agent: Good morning! This is CuraBot calling with your medication reminder.
+User: Oh hello, thank you for calling.
+Agent: I hope you''re doing well today. I''m calling to remind you about your morning medications - Metformin 500mg and Lisinopril 10mg.
+User: Yes, I have them right here. Let me take them now.
+Agent: That''s wonderful. Have you taken them with food as recommended?
+User: Yes, I just finished breakfast. I''m feeling much better this week.
+Agent: I''m glad to hear you''re feeling better! Is there anything else I can help you with today?
+User: No, thank you. I appreciate these reminder calls.
+Agent: You''re welcome! Have a great day, and don''t forget your evening Metformin dose.'),
+  
+  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day' + INTERVAL '5 seconds', NOW() - INTERVAL '1 day' + INTERVAL '1 minute 45 seconds', 105, 'completed', ARRAY['Metformin'], 'Evening medication confirmed. Patient asked about dinner plans.',
+   'Agent: Good evening! This is your medication reminder from CuraBot.
+User: Hello, is it time for my medicine already?
+Agent: Yes, it''s time for your evening Metformin 500mg dose.
+User: Okay, I''ll take it right now. What should I have for dinner?
+Agent: I recommend taking it with your dinner. A balanced meal with vegetables would be great for managing your diabetes.
+User: Thank you, I''ll do that.
+Agent: Excellent! Have a good evening.'),
+
+  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 day 6 hours', NULL, NULL, 0, 'missed', ARRAY['Aspirin'], 'No answer after 3 attempts.', NULL),
+  
+  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 day 5 hours 45 minutes', NOW() - INTERVAL '1 day 5 hours 45 minutes' + INTERVAL '8 seconds', NOW() - INTERVAL '1 day 5 hours 45 minutes' + INTERVAL '1 minute 22 seconds', 82, 'completed', ARRAY['Aspirin'], 'Retry successful. Patient confirmed medication.',
+   'Agent: Hello, this is CuraBot calling again about your midday medication.
+User: Sorry I missed your earlier call, I was in the garden.
+Agent: No problem! I''m calling to remind you about your Aspirin 81mg.
+User: Oh yes, let me get that now. I took it with my lunch.
+Agent: Perfect! Taking it with food is recommended. Have a nice afternoon!
+User: Thank you!'),
+
+  ('11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days' + INTERVAL '12 seconds', NOW() - INTERVAL '2 days' + INTERVAL '2 minutes 10 seconds', 130, 'completed', ARRAY['Metformin', 'Lisinopril'], 'Morning medications confirmed.',
+   'Agent: Good morning! CuraBot here with your medication reminder.
+User: Good morning, I was just about to take my pills.
+Agent: Great timing! Today you need Metformin 500mg and Lisinopril 10mg.
+User: Yes, I have them both here. My blood pressure has been good lately.
+Agent: That''s excellent news! The Lisinopril is helping manage your hypertension well.
+User: Thank you for the reminder. These calls really help me stay on track.
+Agent: I''m glad we can help! Have a wonderful day.');
 
 -- Robert Williams' call logs
-INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes)
+INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes, transcript)
 VALUES
-  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '3 hours', NOW() - INTERVAL '3 hours' + INTERVAL '6 seconds', NOW() - INTERVAL '3 hours' + INTERVAL '3 minutes 15 seconds', 195, 'completed', ARRAY['Warfarin', 'Metoprolol'], 'Patient in great spirits. Confirmed all medications. Discussed upcoming doctor appointment.'),
-  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '15 hours', NOW() - INTERVAL '15 hours' + INTERVAL '4 seconds', NOW() - INTERVAL '15 hours' + INTERVAL '1 minute 55 seconds', 115, 'completed', ARRAY['Atorvastatin', 'Metoprolol'], 'Evening medications confirmed. Patient mentioned grandson visiting tomorrow.'),
-  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '1 day 3 hours', NOW() - INTERVAL '1 day 3 hours' + INTERVAL '7 seconds', NOW() - INTERVAL '1 day 3 hours' + INTERVAL '2 minutes 8 seconds', 128, 'completed', ARRAY['Warfarin', 'Metoprolol'], 'All medications taken on time.'),
-  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '2 days 3 hours', NOW() - INTERVAL '2 days 3 hours' + INTERVAL '5 seconds', NOW() - INTERVAL '2 days 3 hours' + INTERVAL '2 minutes 22 seconds', 142, 'completed', ARRAY['Warfarin', 'Metoprolol'], 'Confirmed medications. Patient asked about weather.');
+  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '3 hours', NOW() - INTERVAL '3 hours' + INTERVAL '6 seconds', NOW() - INTERVAL '3 hours' + INTERVAL '3 minutes 15 seconds', 195, 'completed', ARRAY['Warfarin', 'Metoprolol'], 'Patient in great spirits. Confirmed all medications. Discussed upcoming doctor appointment.',
+   'Agent: Good morning Mr. Williams! This is CuraBot with your medication reminder.
+User: Hello there! I was expecting your call.
+Agent: Wonderful! It''s time for your Warfarin 5mg and Metoprolol 25mg.
+User: Already taken! I set an alarm before your call.
+Agent: Excellent discipline! That''s great for managing your atrial fibrillation.
+User: Thank you. I have a doctor appointment next week for my INR check.
+Agent: That''s very important. Your Warfarin levels need regular monitoring.
+User: Yes, my grandson is taking me. He''s visiting this weekend!
+Agent: How lovely! Enjoy your time with family. Take care!'),
 
--- Dorothy Brown's call logs
-INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes)
-VALUES
-  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '8 hours', NOW() - INTERVAL '8 hours' + INTERVAL '15 seconds', NOW() - INTERVAL '8 hours' + INTERVAL '1 minute 35 seconds', 95, 'completed', ARRAY['Levothyroxine'], 'Early morning medication confirmed.'),
-  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '2 hours', NULL, NULL, 0, 'missed', ARRAY['Calcium + Vitamin D'], 'No answer. Alert sent to caregiver Jennifer.'),
-  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '1 day 8 hours', NOW() - INTERVAL '1 day 8 hours' + INTERVAL '20 seconds', NOW() - INTERVAL '1 day 8 hours' + INTERVAL '1 minute 12 seconds', 72, 'completed', ARRAY['Levothyroxine'], 'Morning medication taken.'),
-  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '1 day 2 hours', NULL, NULL, 0, 'missed', ARRAY['Calcium + Vitamin D'], 'Patient did not answer. Follow-up scheduled.'),
-  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '2 days 8 hours', NOW() - INTERVAL '2 days 8 hours' + INTERVAL '10 seconds', NOW() - INTERVAL '2 days 8 hours' + INTERVAL '1 minute 48 seconds', 108, 'completed', ARRAY['Levothyroxine'], 'Confirmed medication.');
+  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '15 hours', NOW() - INTERVAL '15 hours' + INTERVAL '4 seconds', NOW() - INTERVAL '15 hours' + INTERVAL '1 minute 55 seconds', 115, 'completed', ARRAY['Atorvastatin', 'Metoprolol'], 'Evening medications confirmed. Patient mentioned grandson visiting tomorrow.',
+   'Agent: Good evening! CuraBot here for your evening medication reminder.
+User: Hello! Time for my nighttime pills.
+Agent: Yes, time for Atorvastatin 20mg and Metoprolol 25mg.
+User: Taking them now. My grandson arrives tomorrow!
+Agent: How exciting! Make sure to take your medications on time even with visitors.
+User: I will. Thank you for the reminder.
+Agent: Have a great evening!'),
 
--- James Wilson's call logs
-INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes)
-VALUES
-  ('44444444-4444-4444-4444-444444444444', NOW() - INTERVAL '4 hours', NOW() - INTERVAL '4 hours' + INTERVAL '8 seconds', NOW() - INTERVAL '4 hours' + INTERVAL '2 minutes 45 seconds', 165, 'completed', ARRAY['Tiotropium', 'Metformin'], 'Wife Patricia answered. Confirmed both medications taken.'),
-  ('44444444-4444-4444-4444-444444444444', NOW() - INTERVAL '16 hours', NOW() - INTERVAL '16 hours' + INTERVAL '12 seconds', NOW() - INTERVAL '16 hours' + INTERVAL '1 minute 58 seconds', 118, 'completed', ARRAY['Metformin', 'Latanoprost Eye Drops'], 'Evening medications confirmed. Eye drops administered.'),
-  ('44444444-4444-4444-4444-444444444444', NOW() - INTERVAL '1 day 4 hours', NOW() - INTERVAL '1 day 4 hours' + INTERVAL '6 seconds', NOW() - INTERVAL '1 day 4 hours' + INTERVAL '2 minutes 12 seconds', 132, 'completed', ARRAY['Tiotropium', 'Metformin'], 'Morning routine completed successfully.');
+  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '1 day 3 hours', NOW() - INTERVAL '1 day 3 hours' + INTERVAL '7 seconds', NOW() - INTERVAL '1 day 3 hours' + INTERVAL '2 minutes 8 seconds', 128, 'completed', ARRAY['Warfarin', 'Metoprolol'], 'All medications taken on time.',
+   'Agent: Good morning! This is your CuraBot medication reminder.
+User: Good morning! I''m ready for my medications.
+Agent: Perfect! Warfarin 5mg and Metoprolol 25mg today.
+User: Confirmed, I just took them.
+Agent: Excellent! Keep up the great work with your medication schedule.
+User: Thank you!'),
 
--- Helen Davis' call logs
-INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes)
+  ('22222222-2222-2222-2222-222222222222', NOW() - INTERVAL '2 days 3 hours', NOW() - INTERVAL '2 days 3 hours' + INTERVAL '5 seconds', NOW() - INTERVAL '2 days 3 hours' + INTERVAL '2 minutes 22 seconds', 142, 'completed', ARRAY['Warfarin', 'Metoprolol'], 'Confirmed medications. Patient asked about weather.',
+   'Agent: Good morning Mr. Williams! CuraBot calling with your reminder.
+User: Hello! Nice to hear from you. How''s the weather looking today?
+Agent: I''m here to help with medications, but I hope you have a sunny day! Time for Warfarin and Metoprolol.
+User: Ah yes, taking them now. I like to sit on the porch after breakfast.
+Agent: That sounds lovely! Fresh air is good for you. Medications confirmed?
+User: Yes, all done. Thank you!');
+
+-- Dorothy Brown's call logs (lower adherence - shows concern patterns)
+INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes, transcript)
 VALUES
-  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '5 hours', NULL, NULL, 0, 'missed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'No answer. Thomas (son) notified.'),
-  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '4 hours 30 minutes', NOW() - INTERVAL '4 hours 30 minutes' + INTERVAL '25 seconds', NOW() - INTERVAL '4 hours 30 minutes' + INTERVAL '3 minutes 10 seconds', 190, 'completed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'Retry successful. Son Thomas was present and confirmed medications.'),
-  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '17 hours', NULL, NULL, 0, 'missed', ARRAY['Carvedilol'], 'Called during nap time. Will reschedule.'),
-  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '1 day 5 hours', NULL, NULL, 0, 'missed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'No answer after multiple attempts.'),
-  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '2 days 5 hours', NOW() - INTERVAL '2 days 5 hours' + INTERVAL '18 seconds', NOW() - INTERVAL '2 days 5 hours' + INTERVAL '2 minutes 35 seconds', 155, 'completed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'Morning medications confirmed with assistance.');
+  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '8 hours', NOW() - INTERVAL '8 hours' + INTERVAL '15 seconds', NOW() - INTERVAL '8 hours' + INTERVAL '1 minute 35 seconds', 95, 'completed', ARRAY['Levothyroxine'], 'Early morning medication confirmed.',
+   'Agent: Good morning! CuraBot here for your early medication reminder.
+User: Hello, yes I know I need to take my thyroid medicine.
+Agent: That''s right, Levothyroxine 50mcg. Remember to take it on an empty stomach.
+User: I haven''t eaten yet, so I''ll take it now.
+Agent: Perfect! Wait at least 30 minutes before eating.
+User: I will. Thank you.
+Agent: Have a great morning!'),
+
+  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '2 hours', NULL, NULL, 0, 'missed', ARRAY['Calcium + Vitamin D'], 'No answer. Alert sent to caregiver Jennifer.', NULL),
+
+  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '1 day 8 hours', NOW() - INTERVAL '1 day 8 hours' + INTERVAL '20 seconds', NOW() - INTERVAL '1 day 8 hours' + INTERVAL '1 minute 12 seconds', 72, 'completed', ARRAY['Levothyroxine'], 'Morning medication taken.',
+   'Agent: Good morning! This is CuraBot with your medication reminder.
+User: Oh, is it that time already? I almost forgot.
+Agent: Yes, it''s time for your Levothyroxine. Have you eaten yet?
+User: No, I was about to make breakfast.
+Agent: Perfect timing! Take it now, wait 30 minutes, then have breakfast.
+User: Okay, taking it now.
+Agent: Great! Talk to you later for your midday reminder.'),
+
+  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '1 day 2 hours', NULL, NULL, 0, 'missed', ARRAY['Calcium + Vitamin D'], 'Patient did not answer. Follow-up scheduled.', NULL),
+
+  ('33333333-3333-3333-3333-333333333333', NOW() - INTERVAL '2 days 8 hours', NOW() - INTERVAL '2 days 8 hours' + INTERVAL '10 seconds', NOW() - INTERVAL '2 days 8 hours' + INTERVAL '1 minute 48 seconds', 108, 'completed', ARRAY['Levothyroxine'], 'Confirmed medication.',
+   'Agent: Good morning! CuraBot calling for your medication reminder.
+User: Hello, I was waiting for your call.
+Agent: Wonderful! Time for your Levothyroxine 50mcg.
+User: I remember, empty stomach. I''ll take it now.
+Agent: Excellent! Your thyroid levels will thank you.
+User: Thank you for keeping me on track.');
+
+-- James Wilson's call logs (with caregiver involvement)
+INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes, transcript)
+VALUES
+  ('44444444-4444-4444-4444-444444444444', NOW() - INTERVAL '4 hours', NOW() - INTERVAL '4 hours' + INTERVAL '8 seconds', NOW() - INTERVAL '4 hours' + INTERVAL '2 minutes 45 seconds', 165, 'completed', ARRAY['Tiotropium', 'Metformin'], 'Wife Patricia answered. Confirmed both medications taken.',
+   'Agent: Good morning! This is CuraBot calling for James Wilson''s medication reminder.
+User: Hello, this is Patricia, his wife. James is right here.
+Agent: Hello Patricia! It''s time for James'' Tiotropium inhaler and Metformin.
+User: Yes, I just helped him with the inhaler. He''s taking the Metformin now.
+Agent: Wonderful! How is his breathing today?
+User: Much better than last week. The Tiotropium really helps his COPD.
+Agent: That''s great to hear! Any issues with the eye drops?
+User: No, we do those at night. No problems.
+Agent: Excellent! You''re doing a great job helping James. Have a good day!'),
+
+  ('44444444-4444-4444-4444-444444444444', NOW() - INTERVAL '16 hours', NOW() - INTERVAL '16 hours' + INTERVAL '12 seconds', NOW() - INTERVAL '16 hours' + INTERVAL '1 minute 58 seconds', 118, 'completed', ARRAY['Metformin', 'Latanoprost Eye Drops'], 'Evening medications confirmed. Eye drops administered.',
+   'Agent: Good evening! CuraBot here for James'' evening medications.
+User: Hello, James speaking. My wife is helping me.
+Agent: Hello James! Time for your Metformin and Latanoprost eye drops.
+User: Yes, taking the Metformin now. Patricia will help with the drops.
+Agent: Wonderful! The eye drops are important for your glaucoma.
+User: I know, we never miss them. Patricia makes sure of it.
+Agent: You have great support! Take care and sleep well.'),
+
+  ('44444444-4444-4444-4444-444444444444', NOW() - INTERVAL '1 day 4 hours', NOW() - INTERVAL '1 day 4 hours' + INTERVAL '6 seconds', NOW() - INTERVAL '1 day 4 hours' + INTERVAL '2 minutes 12 seconds', 132, 'completed', ARRAY['Tiotropium', 'Metformin'], 'Morning routine completed successfully.',
+   'Agent: Good morning! This is CuraBot for your medication reminder.
+User: Good morning! Patricia and I are ready.
+Agent: Excellent! Tiotropium inhaler and Metformin this morning.
+User: Using the inhaler now... okay, done. Metformin next.
+Agent: Perfect technique! Your COPD management is on track.
+User: Thank you. We appreciate these calls.
+Agent: Happy to help! Have a wonderful day.');
+
+-- Helen Davis' call logs (critical scenario - lowest adherence, health concerns)
+INSERT INTO call_logs (patient_id, scheduled_at, started_at, ended_at, duration, status, medications, notes, transcript)
+VALUES
+  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '5 hours', NULL, NULL, 0, 'missed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'No answer. Thomas (son) notified.', NULL),
+
+  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '4 hours 30 minutes', NOW() - INTERVAL '4 hours 30 minutes' + INTERVAL '25 seconds', NOW() - INTERVAL '4 hours 30 minutes' + INTERVAL '3 minutes 10 seconds', 190, 'completed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'Retry successful. Son Thomas was present and confirmed medications.',
+   'Agent: Hello, this is CuraBot calling back for Helen Davis''s medication reminder.
+User: Hello, this is Thomas, her son. Mom is here with me now.
+Agent: Hello Thomas! We missed Helen earlier. It''s important she takes her heart medications.
+User: I know, I came right over when I got the alert. She''s a bit tired today.
+Agent: I understand. She needs Furosemide, Carvedilol, and Lisinopril for her heart condition.
+User: Mom, here are your pills. She''s taking them now with water.
+Agent: Excellent. Is she experiencing any swelling in her legs or shortness of breath?
+User: A little swelling, but not as bad as last week. She says she''s feeling weak though.
+Agent: Please monitor her closely. If the swelling worsens or she has chest pain or severe breathing problems, seek emergency care immediately.
+User: I will. I''m staying with her today. Thank you for the follow-up.
+Agent: You''re doing great, Thomas. Don''t hesitate to call her doctor if anything concerns you.'),
+
+  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '17 hours', NULL, NULL, 0, 'missed', ARRAY['Carvedilol'], 'Called during nap time. Will reschedule.', NULL),
+
+  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '1 day 5 hours', NULL, NULL, 0, 'missed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'No answer after multiple attempts.', NULL),
+
+  ('55555555-5555-5555-5555-555555555555', NOW() - INTERVAL '2 days 5 hours', NOW() - INTERVAL '2 days 5 hours' + INTERVAL '18 seconds', NOW() - INTERVAL '2 days 5 hours' + INTERVAL '2 minutes 35 seconds', 155, 'completed', ARRAY['Furosemide', 'Carvedilol', 'Lisinopril'], 'Morning medications confirmed with assistance.',
+   'Agent: Good morning Helen! This is CuraBot with your medication reminder.
+User: Hello dear. My son Thomas is helping me today.
+Agent: That''s wonderful! It''s time for your heart medications - Furosemide, Carvedilol, and Lisinopril.
+User: Thomas is getting them for me now. I''ve been feeling a bit dizzy lately.
+Agent: Dizziness can sometimes occur with these medications. Are you staying hydrated?
+User: I try to, but I forget sometimes.
+Agent: It''s very important with the Furosemide. Please drink water throughout the day but not too much before bed.
+User: Okay, I''ll remember. Thomas wrote it down for me.
+Agent: That''s helpful! If the dizziness continues or worsens, please contact your doctor.
+User: I will. Thank you for caring.');
 
 -- ============================================================================
 -- MEDICAL RECORDS
