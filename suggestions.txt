@@ -1,0 +1,38 @@
+Suggestions to improve the Project Detail page layout (no changes to data model or behavior):
+
+Improve information hierarchy
+Place project title + status badge + last-updated + owner in a compact header (left) with primary actions (Run / Edit) on the right.
+Use a breadcrumb above the header for context and quicker navigation.
+Two-column responsive layout
+Large left column (primary content): flow visualizer / canvas, main logs viewer, run details.
+Right column (secondary, sticky on scroll): live activity / SSE feed, run history, quick metadata (env, webhook URL), and actions. Make it sticky on desktop for quick context.
+KPI strip under the header
+Show 3–5 compact KPI cards (Runs, Success %, Avg Duration, Last Run). Use small sparkline icons and concise numbers; hide sparklines on small screens.
+Flow canvas / visual area
+Make the flow viewer the dominant visual (wide container), allow zoom, fullscreen, and collapse to metadata view.
+Add an accessible legend and a compact toolbar (zoom, center, fullscreen, copy link).
+Tabs for detail sections
+Use tabs under the flow area: Details | Logs | Events | Settings | History.
+Default to Details or Logs based on last user action (persist via localStorage).
+Live events feed improvements (SSE)
+Show live connection indicator (green/yellow/red), "Auto-scroll" toggle, and "Pause live" button.
+Group events by run and allow expanding a run to see full logs.
+Virtualize long lists for performance.
+Loading / skeleton / empty states
+Add skeleton loaders for header, KPIs, canvas and right column while server data loads.
+For empty flows show an illustration + CTA: "Add step" or "Import flow".
+Responsiveness & collapse behaviors
+On small screens collapse right column into a bottom drawer or accessible toggled panel.
+Collapse KPI cards into a single row of chips on mobile.
+Accessibility & keyboard
+Ensure keyboard nav between tabs and flow nodes; add aria-labels for toolbar actions.
+Provide focus-visible styles on interactive elements.
+Micro-interactions & feedback
+Small success animations for runs, inline toast for SSE connection errors, and optimistic UI for small actions.
+Performance & maintainability
+Virtualize large lists (react-virtual).
+Memoize heavy components (flow viewer).
+Keep layout as small presentational components (Header, KPIs, FlowCanvas, RightPanel, Tabs) so unit testing and styling are isolated.
+Example responsive layout skeleton (proposed structure — paste into the page file or create components as you prefer):
+
+Would you like a PR-style patch that adds these presentational components (Header, KPIs, FlowCanvas, RightPanel) into src/app/dashboard/projects/[id]/page.tsx, or would you prefer a smaller incremental change (e.g., only add the sticky right panel or the KPI strip)?

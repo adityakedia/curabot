@@ -1,0 +1,109 @@
+ScreenFlow UI Style Guide
+
+Target Audience:
+- Creative professionals, researchers, designers, and visual thinkers.
+- Users who collect, organize, and automate visual references from the web.
+- People who appreciate a modern, playful, and inspiring interface—less “corporate SaaS,” more creative tool.
+
+1. Modern, Playful, Creative, Futuristic
+
+Typography:
+- Headings: Use a bold, geometric sans-serif font (e.g., Sora, Space Grotesk, DM Sans, or Inter). Consider fonts with a bit of roundness or personality.
+- Body: Clean sans-serif (Inter, Roboto, or similar) for readability.
+- Slightly increased letter-spacing for headings to add a futuristic, airy feel.
+
+Whitespace:
+- Generous padding and margin in all components—let elements “breathe.”
+- Use whitespace to create a sense of calm, focus, and visual hierarchy.
+
+Shadows:
+- Subtle, soft drop shadows on cards and modals.
+- Avoid harsh or high-contrast shadows; use low-opacity, slightly spread shadows for gentle depth.
+
+Corners:
+- Slight rounding (6px or 8px), but avoid pill shapes or heavy rounding.
+- Consider occasional use of organic or “blobby” shapes in backgrounds or section dividers for a creative touch.
+
+Color:
+- Neutral base: white and light gray backgrounds.
+- Playful, creative accent colors: pastel blues, purples, mint, coral, or yellow.
+- Use gradients for buttons, highlights, or section backgrounds—don’t be afraid to use lively, multi-color gradients for a creative vibe.
+- Allow for “floating” or overlapping accent shapes in backgrounds.
+
+Playfulness & Motion:
+- Micro-interactions: button scaling, hover color shifts, bounce or wiggle on icons, animated icons (e.g., Loader2 spinning).
+- Smooth fade/slide-in for cards and modals.
+- Playful empty states and onboarding illustrations (abstract, geometric, or hand-drawn style).
+
+Borders:
+- Thin, subtle borders (1px, light gray) to separate sections.
+- Avoid heavy outlines.
+
+Component Consistency:
+- All style changes should be at the component level (Card, Button, Input, etc.) for consistency and scalability.
+- Use variants for different moods (e.g., Button with “playful” or “futuristic” variant).
+
+2. Scalability & Modularity
+
+- Use a component-driven approach: all UI should be built from shared components.
+- If/when needed, define spacing, color, border-radius, and shadow tokens centrally (e.g., Tailwind config, CSS variables, or a theme file).
+- Prefer updating components, not individual pages.
+
+3. Icons & Graphics
+
+- Use a consistent icon set with a modern, geometric, and friendly style (e.g., Phosphor, Tabler, Lucide).
+- Prefer outlined or duotone icons for a clean, creative look.
+- Use animated icons for loading states (e.g., Loader2 spinning).
+- For playful touches, use simple, abstract, or hand-drawn illustrations for empty states, onboarding, or section dividers (see Open Peeps, Blush, or whimsical.com for inspiration).
+- Avoid skeuomorphic or overly detailed graphics; keep icons and illustrations minimal, bold, and expressive.
+
+4. Inspiration
+
+- Notion: Playful minimalism, micro-interactions, and inviting empty states.
+- Figma: Creative, collaborative energy, geometric shapes, and lively colors.
+- Pitch: Bold gradients, expressive icons, and energetic transitions.
+- Miro: Creative, collaborative, with sticky-note and hand-drawn motifs.
+- Whimsical: Hand-drawn, playful, and approachable.
+- Dropbox Paper: Clean, friendly, with subtle illustrations and soft colors.
+
+Summary:
+- Focus on updating core UI components to use more whitespace, subtle shadows, modest rounding, bold fonts, playful micro-interactions, and creative accents.
+- Use a neutral base with lively, creative accent colors and gradients.
+- Make all style changes at the component level for consistency and scalability.
+- Use modern, geometric icons and minimal, abstract, or hand-drawn illustrations for a cohesive, creative look.
+
+How to adapt Stripe Press style for SaaS:
+
+1. Typography:
+
+Use bold, expressive headings and clear, readable body text.
+Editorial layouts often use larger font sizes and more dramatic hierarchy—this can make dashboards and forms feel more “designed” and less utilitarian.
+2. Whitespace & Layout:
+
+Maintain generous whitespace, but structure it around functional UI (cards, forms, navigation).
+Use editorial-style section dividers, but keep the grid and alignment tight for usability.
+3. Color & Gradients:
+
+Stripe Press uses gradients and bold accent colors for backgrounds, highlights, and illustrations.
+For SaaS, use gradients in hero sections, CTAs, or as subtle backgrounds behind cards—don’t overdo it, but let them add energy.
+4. Graphics & Illustration:
+
+Use abstract, geometric, or playful illustrations for empty states, onboarding, or to highlight features.
+Stripe Press’s illustrations are minimal but expressive—this works well for SaaS, especially for visual reference/automation tools.
+5. Playful Touches:
+
+Editorial sites often have delightful micro-interactions (hover effects, animated icons, transitions). These can make forms, buttons, and navigation feel lively and engaging.
+6. Componentization:
+
+The editorial style can be modularized: cards, sections, feature highlights, etc.
+Build these as reusable components, so the style is consistent and scalable across the app.
+7. Navigation & Usability:
+
+Keep navigation clear and accessible—editorial style can sometimes hide nav, but for SaaS, clarity is key.
+Use bold, clear nav bars, but style them with the same editorial flair (typography, color, subtle shadow).
+Summary:
+Stripe Press’s style can absolutely be adapted for SaaS:
+
+Use its bold typography, whitespace, gradients, and illustration style,
+But apply them to functional components (cards, forms, nav, dashboards)
+Keep usability and clarity at the forefront, but let the visual style inspire creativity and delight.

@@ -1,0 +1,18 @@
+{
+  "users": [
+    {
+      "id": "user_1752487186111",
+      "clerkUserId": "user_2zg5QB8QpirLVCQzSH9nJkE3uaz",
+      "createdAt": "2025-07-14T09:59:46.111Z",
+      "updatedAt": "2025-07-14T09:59:46.616Z",
+      "stripeCustomerId": "cus_Sg5LE0UkGysbhO"
+    },
+    {
+      "id": "user_1752489146960",
+      "clerkUserId": "user_2zrVApBbWhkTSlSteRCKTRaHd3I",
+      "createdAt": "2025-07-14T10:32:26.960Z",
+      "updatedAt": "2025-07-14T10:32:27.400Z",
+      "stripeCustomerId": "cus_Sg5sMdG2yDbgil"
+    }
+  ]
+}

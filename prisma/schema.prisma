@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+// ============================================================================
+// CURABOT PATIENT CARE MODELS
+// ============================================================================
+
+model Patient {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  name              String
+  phone             String
+  age               Int
+  emergencyContact  String?  @map("emergency_contact")
+  emergencyPhone    String?  @map("emergency_phone")
+  medicalConditions String?  @map("medical_conditions")
+  notes             String?
+  status            String   @default("active")
+  adherenceRate     Int      @default(0) @map("adherence_rate")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  medications    Medication[]
+  callLogs       CallLog[]
+  medicalRecords MedicalRecord[]
+  timelineEvents TimelineEvent[]
+  
+  @@map("patients")
+}
+
+model Medication {
+  id        String   @id @default(cuid())
+  patientId String   @map("patient_id")
+  name      String
+  dosage    String
+  time      String
+  frequency String   @default("daily")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("medications")
+}
+
+model CallLog {
+  id          String    @id @default(cuid())
+  patientId   String    @map("patient_id")
+  scheduledAt DateTime  @map("scheduled_at")
+  startedAt   DateTime? @map("started_at")
+  endedAt     DateTime? @map("ended_at")
+  duration    Int       @default(0)
+  status      String    @default("pending")
+  medications String[]
+  notes       String?
+  transcript  String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("call_logs")
+}
+
+model MedicalRecord {
+  id          String   @id @default(cuid())
+  patientId   String   @map("patient_id")
+  type        String   // diagnosis, prescription, test_report, other
+  title       String
+  description String?
+  fileUrl     String?  @map("file_url")
+  fileName    String?  @map("file_name")
+  fileType    String?  @map("file_type")
+  recordDate  DateTime @map("record_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("medical_records")
+}
+
+model TimelineEvent {
+  id          String   @id @default(cuid())
+  patientId   String   @map("patient_id")
+  type        String   // call, medication_change, health_update, record_added, note
+  title       String
+  description String?
+  metadata    Json?
+  eventDate   DateTime @map("event_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("timeline_events")
+}
+
+// ============================================================================
+// LEGACY MODELS (kept for migration compatibility - can be removed after data migration)
+// ============================================================================
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  url       String?
+  objective String?
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  userId    String   @map("user_id")
+  latestAnalysisStatus String? @map("latest_analysis_status")
+  latestAnalysisSummary String? @map("latest_analysis_summary")
+  
+  // Relations
+  analyses Analysis[]
+  
+  @@map("projects")
+}
+
+model Analysis {
+  id          String    @id
+  projectId   String    @map("project_id")
+  url         String
+  objective   String
+  timestamp   DateTime  @default(now())
+  status      String    @default("pending")
+  summary     String?
+  completedAt DateTime? @map("completed_at")
+  
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  steps   Step[]
+  
+  @@map("analyses")
+}
+
+model Step {
+  id           String    @id
+  analysisId   String    @map("analysis_id")
+  stepNumber   Int       @map("step_number")
+  action       String
+  stepStatus   String    @default("pending") @map("step_status")
+  args         Json?
+  analysisData Json?     @map("analysis_data")
+  result       Json?
+  timestamp    DateTime  @default(now())
+  completedAt  DateTime? @map("completed_at")
+  error        String?
+  screenshotPath String? @map("screenshot_path")
+  
+  // Relations
+  analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  
+  @@map("steps")
+}
