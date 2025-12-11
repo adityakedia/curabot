@@ -1,25 +1,31 @@
 -- CuraBot Seed Data
 -- Run this SQL in the Supabase SQL Editor after running schema.sql
--- This creates mock data for testing all dashboard pages
+-- User ID: user_36hJYD8IG4qDV9suaMQgNhIxMue
+
+-- ============================================================================
+-- CLEAR EXISTING DATA
+-- ============================================================================
+DELETE FROM timeline_events;
+DELETE FROM call_logs;
+DELETE FROM medical_records;
+DELETE FROM medications;
+DELETE FROM patients;
 
 -- ============================================================================
 -- MOCK PATIENTS (5 elderly patients)
 -- ============================================================================
 
--- Use a fixed user_id for demo purposes (replace with your actual Clerk user ID)
--- You can find your user_id by logging in and checking the console or API response
-
 INSERT INTO patients (id, user_id, name, phone, age, emergency_contact, emergency_phone, medical_conditions, notes, status, adherence_rate, created_at)
 VALUES
-  ('11111111-1111-1111-1111-111111111111', 'demo_user', 'Margaret Johnson', '+1 (555) 123-4567', 78, 'Sarah Johnson (Daughter)', '+1 (555) 987-6543', 'Type 2 Diabetes, Hypertension, Mild Arthritis', 'Prefers morning calls. Hard of hearing - speak slowly and clearly.', 'active', 94, NOW() - INTERVAL '45 days'),
+  ('11111111-1111-1111-1111-111111111111', 'user_36hJYD8IG4qDV9suaMQgNhIxMue', 'Margaret Johnson', '+1 (555) 123-4567', 78, 'Sarah Johnson (Daughter)', '+1 (555) 987-6543', 'Type 2 Diabetes, Hypertension, Mild Arthritis', 'Prefers morning calls. Hard of hearing - speak slowly and clearly.', 'active', 94, NOW() - INTERVAL '45 days'),
   
-  ('22222222-2222-2222-2222-222222222222', 'demo_user', 'Robert Williams', '+1 (555) 234-5678', 82, 'Michael Williams (Son)', '+1 (555) 876-5432', 'Atrial Fibrillation, High Cholesterol', 'Very punctual with medications. Likes to chat during calls.', 'active', 98, NOW() - INTERVAL '30 days'),
+  ('22222222-2222-2222-2222-222222222222', 'user_36hJYD8IG4qDV9suaMQgNhIxMue', 'Robert Williams', '+1 (555) 234-5678', 82, 'Michael Williams (Son)', '+1 (555) 876-5432', 'Atrial Fibrillation, High Cholesterol', 'Very punctual with medications. Likes to chat during calls.', 'active', 98, NOW() - INTERVAL '30 days'),
   
-  ('33333333-3333-3333-3333-333333333333', 'demo_user', 'Dorothy Brown', '+1 (555) 345-6789', 75, 'Jennifer Brown (Daughter)', '+1 (555) 765-4321', 'Hypothyroidism, Osteoporosis', 'Sometimes forgets evening medications. May need follow-up calls.', 'active', 78, NOW() - INTERVAL '60 days'),
+  ('33333333-3333-3333-3333-333333333333', 'user_36hJYD8IG4qDV9suaMQgNhIxMue', 'Dorothy Brown', '+1 (555) 345-6789', 75, 'Jennifer Brown (Daughter)', '+1 (555) 765-4321', 'Hypothyroidism, Osteoporosis', 'Sometimes forgets evening medications. May need follow-up calls.', 'active', 78, NOW() - INTERVAL '60 days'),
   
-  ('44444444-4444-4444-4444-444444444444', 'demo_user', 'James Wilson', '+1 (555) 456-7890', 80, 'Patricia Wilson (Wife)', '+1 (555) 654-3210', 'COPD, Type 2 Diabetes, Glaucoma', 'Wife usually helps with medications. Call her if no answer.', 'active', 88, NOW() - INTERVAL '20 days'),
+  ('44444444-4444-4444-4444-444444444444', 'user_36hJYD8IG4qDV9suaMQgNhIxMue', 'James Wilson', '+1 (555) 456-7890', 80, 'Patricia Wilson (Wife)', '+1 (555) 654-3210', 'COPD, Type 2 Diabetes, Glaucoma', 'Wife usually helps with medications. Call her if no answer.', 'active', 88, NOW() - INTERVAL '20 days'),
   
-  ('55555555-5555-5555-5555-555555555555', 'demo_user', 'Helen Davis', '+1 (555) 567-8901', 85, 'Thomas Davis (Son)', '+1 (555) 543-2109', 'Congestive Heart Failure, Chronic Kidney Disease', 'Requires careful medication timing. Do not call during nap time (2-4 PM).', 'needs_attention', 65, NOW() - INTERVAL '90 days');
+  ('55555555-5555-5555-5555-555555555555', 'user_36hJYD8IG4qDV9suaMQgNhIxMue', 'Helen Davis', '+1 (555) 567-8901', 85, 'Thomas Davis (Son)', '+1 (555) 543-2109', 'Congestive Heart Failure, Chronic Kidney Disease', 'Requires careful medication timing. Do not call during nap time (2-4 PM).', 'needs_attention', 65, NOW() - INTERVAL '90 days');
 
 -- ============================================================================
 -- MEDICATIONS FOR EACH PATIENT
@@ -201,16 +207,4 @@ VALUES
   ('55555555-5555-5555-5555-555555555555', 'health_update', 'Needs Attention', 'Low adherence rate (65%). Schedule family conference.', NOW() - INTERVAL '1 week'),
   ('55555555-5555-5555-5555-555555555555', 'record_added', 'Cardiology Notes Added', 'Latest consultation notes uploaded', NOW() - INTERVAL '1 month');
 
--- ============================================================================
--- UPDATE USER_ID TO MATCH YOUR ACTUAL CLERK USER ID
--- ============================================================================
--- After running this seed file, run the following SQL to update the user_id
--- to your actual Clerk user ID. Replace 'your_clerk_user_id' with your real ID.
---
--- UPDATE patients SET user_id = 'your_clerk_user_id' WHERE user_id = 'demo_user';
---
--- You can find your Clerk user ID by:
--- 1. Logging into your app
--- 2. Checking the browser console for the user object
--- 3. Or looking at the Clerk dashboard under Users
--- ============================================================================
+
