@@ -45,16 +45,41 @@ export default function PatientsPage() {
     fetchPatients();
   }, []);
 
+  const seedDemoData = async () => {
+    try {
+      const response = await fetch('/api/userdata/seed', { method: 'POST' });
+      const data = await response.json();
+      return data.seeded === true;
+    } catch (err) {
+      console.error('Failed to seed demo data:', err);
+      return false;
+    }
+  };
+
   const fetchPatients = async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/patients');
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch patients');
       }
-      
+
       const data = await response.json();
+
+      // If no patients, auto-seed demo data for new users
+      if (!data.patients || data.patients.length === 0) {
+        const seeded = await seedDemoData();
+        if (seeded) {
+          // Re-fetch after seeding
+          const retryResponse = await fetch('/api/patients');
+          const retryData = await retryResponse.json();
+          setPatients(retryData.patients || []);
+          setStats(retryData.stats || null);
+          return;
+        }
+      }
+
       setPatients(data.patients || []);
       setStats(data.stats || null);
     } catch (err) {
@@ -99,7 +124,8 @@ export default function PatientsPage() {
             Patient Care Dashboard
           </h1>
           <p className='text-muted-foreground'>
-            Monitor medication adherence and manage care schedules for your loved ones
+            Monitor medication adherence and manage care schedules for your
+            loved ones
           </p>
         </div>
 
@@ -155,11 +181,16 @@ export default function PatientsPage() {
                     <div className='flex items-center gap-4'>
                       <div className='bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full'>
                         <span className='text-primary text-lg font-semibold'>
-                          {patient.name.split(' ').map((n) => n[0]).join('')}
+                          {patient.name
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')}
                         </span>
                       </div>
                       <div>
-                        <h3 className='text-foreground font-semibold'>{patient.name}</h3>
+                        <h3 className='text-foreground font-semibold'>
+                          {patient.name}
+                        </h3>
                         <p className='text-muted-foreground text-sm'>
                           {patient.age} years • {patient.phone}
                         </p>
@@ -169,7 +200,11 @@ export default function PatientsPage() {
                     {/* Medications */}
                     <div className='flex flex-wrap gap-2'>
                       {patient.medications.slice(0, 3).map((med) => (
-                        <Badge key={med.id} variant='secondary' className='text-xs'>
+                        <Badge
+                          key={med.id}
+                          variant='secondary'
+                          className='text-xs'
+                        >
                           {med.name}
                         </Badge>
                       ))}
@@ -216,7 +251,8 @@ export default function PatientsPage() {
               No patients yet
             </h3>
             <p className='text-muted-foreground mb-6 max-w-md text-center'>
-              Start by adding your first patient to set up medication reminders and wellness check-ins
+              Start by adding your first patient to set up medication reminders
+              and wellness check-ins
             </p>
             <Link href='/dashboard/patients/new'>
               <Button className='bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2'>

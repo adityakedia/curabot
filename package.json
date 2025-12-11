@@ -15,7 +15,6 @@
     "format:check": "prettier -c -w .",
     "prepare": "husky",
     "install:all": "pnpm install",
-
     "clean": "rm -rf node_modules src/services/webautomation/node_modules pnpm-lock.yaml",
     "workspace:automation": "pnpm --filter webautomation"
   },
@@ -32,7 +31,6 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.9.1",
-
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-aspect-ratio": "^1.1.2",
@@ -60,8 +58,7 @@
     "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-toggle": "^1.1.2",
     "@radix-ui/react-toggle-group": "^1.1.2",
-  "@radix-ui/react-tooltip": "^1.1.8",
-  
+    "@radix-ui/react-tooltip": "^1.1.8",
     "@supabase/supabase-js": "^2.52.0",
     "@tabler/icons-react": "^3.31.0",
     "@tailwindcss/postcss": "^4.0.0",
@@ -80,12 +77,11 @@
     "match-sorter": "^8.0.0",
     "motion": "^11.17.0",
     "natural": "^8.1.0",
-    "next": "15.4.1",
+    "next": "16.0.8",
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.8.16",
     "nuqs": "^2.4.3",
     "postcss": "8.4.49",
-
     "psql": "^0.0.1",
     "puppeteer": "^24.12.1",
     "puppeteer-extra": "^3.3.6",
